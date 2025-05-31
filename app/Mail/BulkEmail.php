@@ -14,14 +14,16 @@ class BulkEmail extends Mailable
     use Queueable, SerializesModels;
 
     public $details;
+    public $email;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($details)
+    public function __construct($email, $details)
     {
         $this->details = $details;
+        $this->email = $email;
     }
 
     /**
@@ -32,7 +34,7 @@ class BulkEmail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Bulk Email',
+            subject: $this->details['subject']
         );
     }
 
@@ -44,15 +46,8 @@ class BulkEmail extends Mailable
     public function content()
     {
         return new Content(
-            markdown: 'emails.bulk',
+            view: 'emails.send-bulk-emails',
         );
-    }
-
-    public function build()
-    {
-        return $this->subject($this->details['subject'])
-            ->markdown('emails.bulk')
-            ->with('details', $this->details);
     }
 
     /**
